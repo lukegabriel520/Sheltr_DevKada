@@ -56,14 +56,8 @@ shows the same route and guidance panel in dark theme to confirm parity across t
 ![Zoomed flood route light mode](docs/images/ZoomedFloodRoute-light.png)
 shows a zoomed route over hazard context in light theme so users can inspect where risk intersects the path.
 
-![Zoomed flood route dark mode](docs/images/ZoomedFloodRoute-dark.png)
-is the dark-theme counterpart of the same route inspection view.
-
 ![Zoomed sandbox light mode](docs/images/ZoomedSandbox-light.png)
 shows detailed map inspection in light theme for local-area checking before movement.
-
-![Zoomed sandbox dark mode](docs/images/ZoomedSandbox-dark.png)
-provides the same local inspection workflow in dark theme.
 
 ## Cloud deployment notes (Railway free tier)
 - Run one device at a time when testing the deployed app. The Railway free tier (512 MB) can hit OOM under heavier concurrent usage.
