@@ -15,7 +15,7 @@ The user-facing app is built with Expo so it can run on phones and the web with 
 | Metric | Typhoon | Super Typhoon | Significance |
 | --- | --- | --- | --- |
 | Recall | 0.87 | 0.90 | Good ability to catch hazards. |
-| Precision | 0.77 | 0.76 | Decent roughly 76 to 77% trustworthiness of a hazard alert. |
+| Precision | 0.77 | 0.76 | Decent, with about 76 to 77% trustworthiness of a hazard alert. |
 | Accuracy | 0.73 | 0.73 | Decent overall correctness, with hazard presence or absence classified correctly about 73% of the time. |
 | Flip Rate (consistency of predictions) | 0.000 | 0.000 | Excellent stability across different sampling resolutions. |
 
