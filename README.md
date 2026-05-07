@@ -3,7 +3,7 @@
 </p>
 
 # Sheltr
-Sheltr is a silent guardian for Metro Manila evacuation decisions. It focuses on safety-first routing when floods and storm surge turn ordinary streets into impassable segments.
+Sheltr is your flood-assistant for Metro Manila evacuation decisions. It focuses on safety-first routing when floods and storm surge turn ordinary streets into impassable segments.
 
 ## Project status: pre-planning
 Sheltr is in a pre-planning phase. The system already exposes four scenario modes (auto, sts, typhoon, super_typhoon), but the product is not production-ready and should be treated as a planning and demonstration tool. Outputs are guidance, not guarantees. Always follow PAGASA and LGU directives.
