@@ -61,13 +61,13 @@ Standard navigation tools such as Waze or Google Maps are not built for micro-to
 - GIS tooling: QGIS, Shapely, GeoJSON
 - Data store: Supabase (PostgreSQL + PostGIS)
 
-## Repository map (judge labels vs. repo folders)
+## Repo map
 - api/ → backend/ — Flask API and hazard logic
 - app/ → frontend/ — Expo app
 - data/ → data/ — Flood, storm-surge, and river GeoJSON
 - scripts/ → repo root scripts — Local run helpers and batch files
 
-## Repository tree
+## Repo tree
 ```
 .
 ├── backend/                 # api/
@@ -82,7 +82,7 @@ Standard navigation tools such as Waze or Google Maps are not built for micro-to
 └── package.json
 ```
 
-## Routing and safety logic (summary)
+## Routing and safety logic
 Routing chooses a graph route from Valhalla when available, then samples that route against flood and storm-surge polygons. A deterministic policy converts overlap metrics into flood risk, safety score, confidence score, and a go/caution/no_go decision. The full list of parameters, weights, and thresholds is documented in docs/POLICY.md.
 
 ## Routing warning and low-confidence behavior
