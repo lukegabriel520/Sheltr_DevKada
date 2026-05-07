@@ -32,17 +32,17 @@ Standard navigation tools such as Waze or Google Maps are not built for micro-to
 - super_typhoon — Super typhoon scenario. Forces 100-year flood map and SSA4 storm-surge baseline.
 
 ## UI samples
-![Homepage](docs/images/Homepage.png) — First screen users see. It is where users start a route check and select a hazard scenario before requesting guidance.
-![3 preset light](docs/images/3%20preset%20light.png) — Light-theme preset view used for quick route checks in normal viewing conditions.
-![3 preset dark](docs/images/3%20preset%20dark.png) — Same preset workflow in dark theme for low-light readability and visual comfort.
+![Homepage](docs/images/Homepage.png)
+![3 preset light](docs/images/3%20preset%20light.png) 
+![3 preset dark](docs/images/3%20preset%20dark.png) 
 
 ### Route output and decision support
-![Route and AI panel light mode](docs/images/Route%26Ai-lightmode.png) — Route output, decision support cards, and summary guidance in light theme. This is where users interpret whether a route is safer, borderline, or unsafe.
-![Route and AI panel dark mode](docs/images/Route%26Ai-dark.png) — Same route and guidance panel in dark theme to confirm parity across themes.
+![Route and AI panel light mode](docs/images/Route%26Ai-lightmode.png) 
+![Route and AI panel dark mode](docs/images/Route%26Ai-dark.png) 
 
 ### Map evidence and local context
-![Zoomed flood route light mode](docs/images/ZoomedFloodRoute-light.png) — Zoomed route over hazard context in light theme so users can inspect where risk intersects the path.
-![Zoomed sandbox light mode](docs/images/ZoomedSandbox-light.png) — Detailed map inspection in light theme for local-area checking before movement.
+![Zoomed flood route light mode](docs/images/ZoomedFloodRoute-light.png)
+![Zoomed sandbox light mode](docs/images/ZoomedSandbox-light.png) 
 
 ## Cloud deployment notes (Railway free tier)
 - Run one device at a time when testing the deployed app. The Railway free tier (512 MB) can hit OOM under heavier concurrent usage.
