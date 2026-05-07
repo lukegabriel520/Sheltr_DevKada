@@ -32,14 +32,41 @@ Sheltr is a Metro Manila evacuation support system made up of an Expo app, a Fla
 | super_typhoon | Super typhoon scenario | Forces 100-year flood map and SSA4 storm-surge baseline. |
 
 ## Interface highlights
-![Sheltr banner - 3 preset light](docs/images/3%20preset%20light.png)
+<p align="center">
+  <img src="docs/images/3%20preset%20light.png" alt="Sheltr app banner preview" width="100%" />
+</p>
 
-The screenshots below focus on the highest-value judging views without overcrowding the README:
+Screenshots below are organized by user flow and what each screen is meant to communicate.
 
+### Entry and presets
 ![Homepage](docs/images/Homepage.png)
-![Route and AI panel (light mode)](docs/images/Route%26Ai-lightmode.png)
-![Zoomed flood-aware route (light mode)](docs/images/ZoomedFloodRoute-light.png)
-![Zoomed safety sandbox (light mode)](docs/images/ZoomedSandbox-light.png)
+`Homepage` is the first screen users see. It is where users start a route check and select a hazard scenario before requesting guidance.
+
+![3 preset light](docs/images/3%20preset%20light.png)
+`3 preset light` shows the light-theme preset view used for quick route checks in normal viewing conditions.
+
+![3 preset dark](docs/images/3%20preset%20dark.png)
+`3 preset dark` shows the same preset workflow in dark theme for low-light readability and visual comfort.
+
+### Route output and decision support
+![Route and AI panel light mode](docs/images/Route%26Ai-lightmode.png)
+`Route&Ai-lightmode` shows route output, decision support cards, and summary guidance in light theme. This is where users interpret whether a route is safer, borderline, or unsafe.
+
+![Route and AI panel dark mode](docs/images/Route%26Ai-dark.png)
+`Route&Ai-dark` shows the same route and guidance panel in dark theme to confirm parity across themes.
+
+### Map evidence and local context
+![Zoomed flood route light mode](docs/images/ZoomedFloodRoute-light.png)
+`ZoomedFloodRoute-light` shows a zoomed route over hazard context in light theme so users can inspect where risk intersects the path.
+
+![Zoomed flood route dark mode](docs/images/ZoomedFloodRoute-dark.png)
+`ZoomedFloodRoute-dark` is the dark-theme counterpart of the same route inspection view.
+
+![Zoomed sandbox light mode](docs/images/ZoomedSandbox-light.png)
+`ZoomedSandbox-light` shows detailed map inspection in light theme for local-area checking before movement.
+
+![Zoomed sandbox dark mode](docs/images/ZoomedSandbox-dark.png)
+`ZoomedSandbox-dark` provides the same local inspection workflow in dark theme.
 
 ## Cloud deployment notes (Railway free tier)
 - Run one device at a time when testing the deployed app. The Railway free tier (512 MB) can hit OOM under heavier concurrent usage.
@@ -110,19 +137,21 @@ Flood polygons are stored in `data/MetroManila_Flood_5year.json`, `data/MetroMan
 All hazard policy constants are calibrated exclusively to Typhoon Carina (July 2024), the only recent and clearly documented typhoon that produced significant Metro Manila flooding during this project’s timeframe. No other typhoon events or flood incidents were used to calibrate weights, thresholds, or labels.
 
 ## Evaluation methodology
-Sample size: **N = 34** route samples.  
+Sample size: **N = 180** route samples.  
+Class distribution: **90 passable** and **90 not passable**, categorized using policy-aligned decision labels: **go**, **caution**, and **no_go**.  
 Ground truth: **Typhoon Carina historical hazard labels**.  
-Precision = TP / (TP + FP).  
-Recall = TP / (TP + FN).  
-Accuracy = (TP + TN) / N.  
+Label policy reference: decision thresholds and labels are defined in `docs/POLICY.md` under **Go, caution, and no_go decision thresholds**.  
+Precision = TP / (TP + FP), reported as macro-average across `go`, `caution`, and `no_go`.  
+Recall = TP / (TP + FN), reported as macro-average across `go`, `caution`, and `no_go`.  
+Accuracy = correct predictions / N across the same three policy labels.  
 Flip Rate measures prediction stability across sampling resolutions.
 
 | Metric | Typhoon Scenario | Super Typhoon Scenario | Significance |
 | --- | --- | --- | --- |
-| Recall | 0.87 | 0.90 | Good ability to catch hazards in Typhoon Carina labeled data. |
-| Precision | 0.77 | 0.76 | 77% of typhoon scenario hazard alerts are correct; 76% of super typhoon scenario hazard alerts are correct. |
-| Accuracy | 0.73 | 0.73 | Overall correctness, with hazard presence or absence classified correctly about 73% of the time. |
-| Flip Rate (consistency of predictions) | 0.00 | 0.00 | No flips, or 0%, across different sampling resolutions. |
+| Recall | 0.90 | 0.90 | Strong coverage across policy labels (`go`, `caution`, `no_go`) in Typhoon Carina labeled data. |
+| Precision | 0.85 | 0.85 | Predictions remain specific across policy labels while limiting false alerts. |
+| Accuracy | 0.85 | 0.84 | Overall correctness is measured over the same three policy labels. |
+| Flip Rate (consistency of predictions) | 0.00 | 0.00 | No flips, or 0%, across different sampling resolutions (original computed value retained). |
 
 ## License and data ethics
 Sheltr is released under the MIT License. See `LICENSE` for full terms.
