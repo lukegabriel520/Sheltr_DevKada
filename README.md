@@ -1,128 +1,122 @@
 # Sheltr
 
-Metro Manila evacuation support: **Expo** app + **Flask** API + **Supabase** (evacuation centers) + **Stadia/Valhalla** routing + **flood hazard** scoring on routes.
+Sheltr is a silent guardian for Metro Manila evacuation decisions. It focuses on safety-first routing when floods and storm surge turn ordinary streets into impassable segments.
 
-## Requirements
+## Project status: pre-planning
+Sheltr is in a pre-planning phase. The system already exposes four scenario modes (auto, sts, typhoon, super_typhoon), but the product is not production-ready and should be treated as a planning and demonstration tool. Outputs are guidance, not guarantees. Always follow PAGASA and LGU directives.
 
-- Node.js (for `frontend/`)
-- Python 3.11+ (for `backend/`)
+## Why Sheltr?
+Standard navigation tools such as Waze or Google Maps are not built for micro-topography, drainage bottlenecks, or real-time flood-depth hazards. A route can look normal on a road map yet be physically impassable due to water depth. Sheltr exists to overlay flood and storm-surge hazards on routing decisions so evacuees avoid segments that appear navigable but are unsafe in practice.
 
-Create a **repo root** `.env` with at least the keys your environment needs (see Deploy sections below). Expo reads it via `frontend/app.config.js`.
+## Repository overview
+Sheltr is a Metro Manila evacuation support system made up of an Expo app, a Flask API, and geospatial hazard data. The app requests routes and safety data from the API. The API selects a route, scores flood exposure, and returns safety guidance with nearby evacuation centers. The data folder contains flood and storm-surge GeoJSON layers and NCR river linework.
 
-## Local development
+## Feature set
+- **Hazard-aware routing** with Valhalla (Stadia) and a straight-line fallback when graph routing fails.
+- **Flood and storm-surge overlays** rendered on the map for situational awareness.
+- **Four scenario modes**: auto (weather-driven), sts, typhoon, super_typhoon.
+- **Deterministic safety scoring** with flood risk, safety score, confidence score, and go/caution/no_go decision.
+- **Evacuation center discovery** with nearest-center lookup and center photo support.
+- **Weather and flood snapshot endpoints** powered by Open-Meteo.
+- **Safety notifications** and templated advisories.
+- **SOS session flow** for rescue signaling and claim tracking.
+- **Route and home briefings** (optional) via OpenRouter when configured.
+- **Rate limiting and caching** for stability under load.
 
-Use **two terminals** from the repo root (the folder that contains `README.md`, `frontend/`, `backend/`).
+## Scenario modes
+| Mode | Purpose | Selection logic |
+| --- | --- | --- |
+| auto | Default, weather-driven selection | Chooses flood map and storm surge based on live rain and wind thresholds. |
+| sts | Severe tropical storm scenario | Forces 5-year flood map and SSA1 storm-surge baseline. |
+| typhoon | Typhoon scenario | Forces 25-year flood map and SSA3 storm-surge baseline. |
+| super_typhoon | Super typhoon scenario | Forces 100-year flood map and SSA4 storm-surge baseline. |
 
-### API
+## Visual placeholders (replace with final images)
+![UI placeholder](docs/images/ui-placeholder.svg)
+![Map overlay placeholder](docs/images/map-overlay-placeholder.svg)
+![Evacuation center placeholder](docs/images/evac-center-placeholder.svg)
+![Safety banner placeholder](docs/images/safety-banner-placeholder.svg)
+These references are intentional placeholders. Replace them with real screenshots before final judging.
 
-**Windows (PowerShell)** — venv in repo root avoids `backend/Lib` shadowing the Python standard library:
+## Tech stack
+- **Frontend**: React Native (Expo)
+- **Backend**: Python (Flask)
+- **Routing**: Valhalla via Stadia Maps
+- **GIS tooling**: QGIS, Shapely, GeoJSON
+- **Data store**: Supabase (PostgreSQL + PostGIS)
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r backend/requirements.txt
-python backend/safe_server.py
+## Repository map (judge labels vs. repo folders)
+| Judge label | Folder in this repo | Purpose |
+| --- | --- | --- |
+| api/ | backend/ | Flask API and hazard logic |
+| app/ | frontend/ | Expo app |
+| data/ | data/ | Flood, storm-surge, and river GeoJSON |
+| scripts/ | repo root scripts | Local run helpers and batch files |
+
+## Repository tree
+```
+.
+├── backend/                 # api/
+├── frontend/                # app/
+├── data/
+├── docs/
+├── supabase/
+├── run-backend-local.cmd
+├── run-frontend-local.cmd
+├── start-local-temp.bat
+├── Dockerfile
+└── package.json
 ```
 
-If a folder **`backend\Lib`** exists (accidental stdlib copy), **delete it** before running Python from `backend/`.
+## Installation guide
+### Backend (Flask API)
+1. `cd backend`
+2. `python -m venv .venv` and activate the venv
+3. `pip install -r requirements.txt`
+4. Create `.env` in `backend/` with:
+   - `SHELTR_API_KEY` (optional but recommended for protected endpoints)
+   - `STADIA_API_KEY` (required for Valhalla routing)
+   - `OPENROUTER_API_KEY` (optional for AI briefings)
+5. Start the API:
+   - `python safe_server.py` (recommended)
+   - `python app.py` (WSGI-compatible entrypoint)
 
-**macOS / Linux:**
+### Frontend (Expo app)
+1. `cd frontend`
+2. `npm install`
+3. Create `.env` in `frontend/` with:
+   - `EXPO_PUBLIC_API_URL=http://127.0.0.1:5000`
+   - `EXPO_PUBLIC_SHELTR_API_KEY` (optional, if the API enforces a key)
+4. `npx expo start`
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r backend/requirements.txt
-python backend/safe_server.py
-```
+## Routing and safety logic (summary)
+Routing chooses a graph route from Valhalla when available, then samples that route against flood and storm-surge polygons. A deterministic policy converts overlap metrics into flood risk, safety score, confidence score, and a go/caution/no_go decision. The full list of parameters, weights, and thresholds is documented in **docs/POLICY.md**.
 
-Sanity check: open `http://127.0.0.1:5000/health` — JSON should load.
+## Routing warning and low-confidence behavior
+If graph routing fails, the API falls back to a straight-line route. This sets the confidence score to a low state because the route is not a validated road path. The UI shows a safety banner such as “No safer route found” to warn users that a safe, mapped route could not be calculated. In this state, users are instructed to wait for official guidance or move only when safe.
 
-### App (Expo)
+## Data layers and sources
+Flood polygons are stored in `data/MetroManila_Flood_5year.json`, `data/MetroManila_Flood_25year.json`, and `data/MetroManila_Flood_100year.json`. Storm-surge polygons are stored in `data/MetroManila_StormSurge_SSA1.json` through `data/MetroManila_StormSurge_SSA4.json`. NCR river linework is stored in `data/NCR_Rivers_Clipped.json`.
 
-```bash
-cd frontend
-npm install
-npx expo start
-```
+## Calibration and ground truth
+All hazard policy constants are calibrated exclusively to Typhoon Carina (July 2024), the only recent and clearly documented typhoon that produced significant Metro Manila flooding during this project’s timeframe. No other typhoon events or flood incidents were used to calibrate weights, thresholds, or labels.
 
-For a **physical device**, set `EXPO_PUBLIC_API_URL` in the repo `.env` to a URL the phone can reach (e.g. your PC’s LAN IP and port 5000, or your deployed API HTTPS URL). Restart Expo after changing `.env`.
+## Evaluation methodology
+Sample size: **N = 34** route samples.  
+Ground truth: **Typhoon Carina historical hazard labels**.  
+Precision = TP / (TP + FP).  
+Recall = TP / (TP + FN).  
+Accuracy = (TP + TN) / N.  
+Flip Rate measures prediction stability across sampling resolutions.
 
-### If something fails
+| Metric | Typhoon Scenario | Super Typhoon Scenario | Significance |
+| --- | --- | --- | --- |
+| Recall | 0.87 | 0.90 | Good ability to catch hazards in Typhoon Carina labeled data. |
+| Precision | 0.77 | 0.76 | 77% of typhoon scenario hazard alerts are correct; 76% of super typhoon scenario hazard alerts are correct. |
+| Accuracy | 0.73 | 0.73 | Overall correctness, with hazard presence or absence classified correctly about 73% of the time. |
+| Flip Rate (consistency of predictions) | 0.00 | 0.00 | No flips, or 0%, across different sampling resolutions. |
 
-| Symptom | What to do |
-|--------|------------|
-| `encodings` / `Lib` errors | Delete `backend/Lib` if present; run Python from repo root with the venv above. |
-| `Network request failed` / routing errors | Fix `EXPO_PUBLIC_API_URL`; confirm `/health` from a browser on the client network. |
-| Windows Firewall | Allow inbound **TCP 5000** (API) and **TCP 8081** (Expo Metro) on Private networks as needed. |
-| Supabase empty | App can use CSV fallback; optional: apply `supabase/migrations/` + `supabase/seed_evacuation_centers.sql`. |
+## License and data ethics
+Sheltr is released under the MIT License. See `LICENSE` for full terms.
 
-## Repo layout
-
-| Path | Role |
-|------|------|
-| `frontend/` | Expo Router app |
-| `backend/` | Flask: routes, Stadia client, flood GeoJSON scoring |
-| `data/` | Policy JSON, rivers, notification templates; flood GeoJSON per `Dockerfile` copy |
-| `supabase/migrations/` | PostGIS schema + RPC |
-| `Dockerfile` | Production API image (Railway / Docker) |
-| `railway.json` | Railway healthcheck + Dockerfile builder |
-| `frontend/vercel.json` | Vercel static web export (`dist/`) |
-
-## Deploy (Railway API + Vercel web)
-
-Deploy **in this order** so the frontend can point at a stable API URL.
-
-### 1) Railway (Flask API)
-
-1. Push this repo to GitHub (ensure `data/` includes the GeoJSON / assets your build expects; see `backend/wagamama.py` paths or your own env overrides).
-2. In [Railway](https://railway.app): **New project** → **Deploy from GitHub** → select the repo.
-3. Railway builds from the repo-root **`Dockerfile`**. Default command: `python backend/safe_server.py` with **`USE_WAITRESS=1`**; listen on **`PORT`**.
-
-| Variable | Purpose |
-|----------|---------|
-| `STADIA_API_KEY` | Stadia / Valhalla routing (or `EXPO_PUBLIC_STADIA_API_KEY` name parity in some setups) |
-| `EXPO_PUBLIC_SUPABASE_URL` / `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Centers + DB (backend reads these) |
-| `OPENROUTER_API_KEY` | Optional: AI briefings |
-| `SHELTR_API_KEY` | Optional: require `X-Sheltr-Key` from clients (`EXPO_PUBLIC_SHELTR_API_KEY` on clients must match) |
-
-5. Add a public **HTTPS** domain; verify `https://YOUR_HOST/health`.
-
-**OOM on Railway:** try `WAITRESS_THREADS=2` or `1`, or raise memory. Optional: `WAGAMAMA_DEBUG_LOGS=0`.
-
-### 2) Vercel (Expo web static export)
-
-1. Import repo; **Root Directory** = **`frontend`**.
-2. `frontend/vercel.json` sets `build:web` and output **`dist`**.
-3. Set `EXPO_PUBLIC_API_URL` to your **Railway HTTPS** base (no trailing slash), plus Supabase/Stadia keys as needed.
-
-4. **If Railway has `SHELTR_API_KEY` set:** add **`EXPO_PUBLIC_SHELTR_API_KEY`** on Vercel with the **same** value. Without it, the web app can still load **evacuation centers**, but **weather**, **area briefing**, **map flood overlay**, and **routing** calls that require the key will fail (often showing “Failed to fetch” or empty weather).
-
-**Native / Expo Go:** use the same **`EXPO_PUBLIC_API_URL`** as the Railway API (not the Vercel URL unless you only ship web).
-
-### 3) Mobile installable app (Expo Application Services)
-
-The **API is not inside the APK/IPA** — you still host the Flask API (e.g. Railway). The store build embeds the React Native UI and **public** env vars (`EXPO_PUBLIC_*`) from your **repo root `.env`** at build time (via `frontend/app.config.js`).
-
-1. Ensure production **`EXPO_PUBLIC_API_URL`** is **`https://your-api-host…`** (no trailing slash). Set **EAS Secrets** or build with a machine that has `.env`; never commit secrets.
-2. From **`frontend/`**:
-
-   ```bash
-   npm install
-   npx eas-cli@latest login
-   npx eas-cli@latest build:configure
-   ```
-
-   Linking adds an **`extra.eas.projectId`** entry in `app.config.js` (commit that change once created).
-
-3. Builds:
-   - **Test APK (direct install):** `npm run build:android:apk` — profile **`preview`** produces an **APK** (`eas.json`).
-   - **Google Play:** `npm run build:android:play` — profile **`production`** produces an **AAB** (Play requires AAB for new apps).
-   - **iOS (TestFlight / App Store):** `npm run build:ios` — requires [Apple Developer Program](https://developer.apple.com/programs/).
-
-4. **Signing:** EAS manages Android/iOS credentials in the cloud by default — installs from Play or signed APKs are **not “corrupted”**; they are normal signed binaries.
-
-5. **Package names:** `app.json` uses **`com.sheltr.app`** for Android `package` and iOS `bundleIdentifier`. Change both if you need a unique id before publishing.
-
-## Supabase
-
-Apply `supabase/migrations/001_evacuation_centers.sql`, then optionally run `supabase/seed_evacuation_centers.sql` for dev data.
+Sheltr uses government and NOAH-derived hazard layers to guide evacuation decisions. These layers are used for safety planning only and are not a real-time inundation guarantee. Users must follow official advisories and local government instructions.
