@@ -104,7 +104,7 @@ All hazard policy constants are calibrated exclusively to Typhoon Carina (July 2
 | Recall | 0.90 | 0.90 | Strong coverage across policy labels (go, caution, no_go) in Typhoon Carina labeled data. |
 | Precision | 0.85 | 0.85 | Predictions remain specific across policy labels while limiting false alerts. |
 | Accuracy | 0.85 | 0.84 | Overall correctness is measured over the same three policy labels. |
-| Flip Rate (consistency of predictions) | 0.00 | 0.00 | No flips, or 0%, across different sampling resolutions (original computed value retained). |
+| Flip Rate (consistency of predictions) | 0.00 | 0.00 | No flips, or 0%, across different sampling resolutions. |
 
 ## License and data ethics
 Sheltr is released under the MIT License. See `LICENSE` for full terms.
