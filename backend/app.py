@@ -17,11 +17,12 @@ if __name__ == "__main__":
         from waitress import serve
 
         raw_threads = (os.environ.get("WAITRESS_THREADS") or "").strip()
-        threads = (
-            max(MIN_THREADS, min(MAX_THREADS, int(raw_threads)))
-            if raw_threads
-            else DEFAULT_THREADS
-        )
+        threads = DEFAULT_THREADS
+        if raw_threads:
+            try:
+                threads = max(MIN_THREADS, min(MAX_THREADS, int(raw_threads)))
+            except ValueError:
+                threads = DEFAULT_THREADS
         serve(app, host="0.0.0.0", port=port, threads=threads)
     else:
         app.run(host="0.0.0.0", port=port, debug=False, threaded=True)
