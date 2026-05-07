@@ -6,7 +6,7 @@ To the CodeKada Hackathon organizers, mentors, and judges, thank you for the opp
 Sheltr is a Metro Manila evacuation support system made up of three parts: an Expo app for users, a Flask API for routing and hazard scoring, and geospatial data for flood and storm-surge hazards. The app requests routes and safety data from the API. The API selects a route, scores its flood exposure, and returns safety guidance and nearby evacuation centers. The data folder contains the flood and storm-surge GeoJSON layers and river linework used by the scoring logic.
 
 ## Basis and calibration
-All hazard policy constants are based on Typhoon Carina only. Typhoon Carina is explicitly the sole calibration reference because it is the only recent and clearly documented typhoon that produced significant flooding in Metro Manila during this project’s timeframe. No other typhoon events or flood incidents were used to calibrate weights, thresholds, or labels.
+All hazard policy constants are based on Typhoon Carina only. Typhoon Carina is explicitly the sole calibration reference because it is the only recent and clearly documented typhoon that produced significant flooding in Metro Manila during this project’s timeframe. The repository does not store the exact Typhoon Carina date or year, so this section should be updated when the team provides the exact calendar reference. No other typhoon events or flood incidents were used to calibrate weights, thresholds, or labels.
 
 ## Data layers and sources
 Flood polygons are stored in data/MetroManila_Flood_5year.json, data/MetroManila_Flood_25year.json, and data/MetroManila_Flood_100year.json. Storm-surge polygons are stored in data/MetroManila_StormSurge_SSA1.json through data/MetroManila_StormSurge_SSA4.json. NCR river linework is stored in data/NCR_Rivers_Clipped.json. These layers are GeoJSON and can be prepared or inspected in QGIS or other GIS tools.
@@ -109,6 +109,7 @@ River proximity metrics
 - Distance buckets reported at 50 m, 100 m, and 150 m.
 
 ## Model results and what they mean
+The metrics below are provided by the team’s external evaluation. The dataset and evaluation scripts are not stored in this repository, so the table reflects results supplied outside the codebase.
 | Metric | Typhoon | Super Typhoon | Significance |
 | --- | --- | --- | --- |
 | Recall | 0.87 | 0.90 | Good ability to catch hazards. |
