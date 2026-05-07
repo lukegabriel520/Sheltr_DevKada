@@ -39,6 +39,7 @@ Standard navigation tools such as Waze or Google Maps are not built for micro-to
 ### Route output and decision support
 ![Route and AI panel light mode](docs/images/Route%26Ai-lightmode.png) 
 ![Route and AI panel dark mode](docs/images/Route%26Ai-dark.png) 
+--PS: The 100% safety score reflects current conditions without rain/typhoon risks, but switching modes will automatically modify this percentage to account for flood data.
 
 ### Map evidence and local context
 ![Zoomed flood route light mode](docs/images/ZoomedFloodRoute-light.png)
