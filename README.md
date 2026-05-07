@@ -5,11 +5,6 @@
 # Sheltr
 Sheltr is your flood-assistant for Metro Manila evacuation decisions. It focuses on safety-first routing when floods and storm surge turn ordinary streets into impassable segments.
 
-## Project status (pre-planning)
-- Sheltr is in a pre-planning phase and is not production-ready.
-- The system already exposes four scenario modes (auto, sts, typhoon, super_typhoon).
-- Outputs are guidance, not guarantees. Always follow PAGASA and LGU directives.
-
 ## Why Sheltr?
 Standard navigation tools such as Waze or Google Maps are not built for micro-topography, drainage bottlenecks, or real-time flood-depth hazards. A route can look normal on a road map yet be physically impassable due to water depth. Sheltr exists to overlay flood and storm-surge hazards on routing decisions so evacuees avoid segments that appear navigable but are unsafe in practice.
 
