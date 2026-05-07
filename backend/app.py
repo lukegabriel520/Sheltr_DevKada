@@ -6,6 +6,10 @@ from safe_server import app
 
 __all__ = ["app"]
 
+MIN_THREADS = 1
+MAX_THREADS = 32
+DEFAULT_THREADS = 4
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
@@ -13,7 +17,11 @@ if __name__ == "__main__":
         from waitress import serve
 
         raw_threads = (os.environ.get("WAITRESS_THREADS") or "").strip()
-        threads = max(1, min(32, int(raw_threads))) if raw_threads else 4
+        threads = (
+            max(MIN_THREADS, min(MAX_THREADS, int(raw_threads)))
+            if raw_threads
+            else DEFAULT_THREADS
+        )
         serve(app, host="0.0.0.0", port=port, threads=threads)
     else:
         app.run(host="0.0.0.0", port=port, debug=False, threaded=True)
