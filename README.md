@@ -17,6 +17,6 @@ The user-facing app is built with Expo so it can run on phones and the web with 
 | Recall | 0.87 | 0.90 | Good ability to catch hazards. |
 | Precision | 0.77 | 0.76 | Decent 76% trustworthiness of a hazard alert. |
 | Accuracy | 0.73 | 0.73 | Decent overall correctness of the model. |
-| Flip Rate | 0.000 | 0.000 | Excellent stability across different sampling resolutions. |
+| Flip Rate (consistency of predictions) | 0.000 | 0.000 | Excellent stability across different sampling resolutions. |
 
 In everyday terms, the model is good at catching dangerous areas and stays consistent across map resolutions, while the alerts are reasonably trustworthy for guiding safer routing.
