@@ -36,7 +36,7 @@ Flood probability and safety score
 - Minimum safety score: 0.08.
 - Flood probability is the amplified weighted severity, with a floor when any overlap is detected.
 - Flood risk equals flood probability plus elevation penalty, then clamped to 0–1.
-- Elevation penalty is defined for extensibility and remains 0.0 because no elevation raster is loaded in this repository and no elevation-based adjustment is applied.
+- Elevation penalties are not implemented in this repository, so elevation_penalty is always 0.0.
 - Safety score equals 1 minus flood risk, clamped to the minimum safety score.
 
 Confidence score components
@@ -90,7 +90,7 @@ Scenario mapping and overlays
 - Manual scenario storm-surge pairing: sts forces SSA1, typhoon forces SSA3, super_typhoon forces SSA4 if live weather does not already select a higher severity.
 - Flood overlay display modes: 0 auto, 1 show Var 3 only, 2 show Var 2 and 3, 3 show Var 1, 2, and 3.
 - Storm-surge display mode allows HAZ 1, 2, and 3.
-- Auto overlays clip features to a 12 km radius around the user; manual scenarios clip to 48 km by default.
+- Auto overlays clip features to a 12 km radius around the user. Manual scenario clipping uses 48 km and is configurable via SHELTR_MANUAL_SCENARIO_OVERLAY_RADIUS_KM.
 
 Rerouting and exclusions
 - Max reroute attempts: 4 by default via ROUTE_FLOOD_REROUTE_MAX.
@@ -110,7 +110,7 @@ River proximity metrics
 - Distance buckets reported at 50 m, 100 m, and 150 m.
 
 ## Model results and what they mean
-The metrics below are provided by the team’s external evaluation using Typhoon Carina labeled hazard data. The dataset size, split strategy, and evaluation scripts are not stored in this repository, so the table reflects results supplied outside the codebase.
+The metrics below are provided by the team’s external evaluation using Typhoon Carina labeled hazard data. The dataset size, split strategy, and evaluation scripts are not stored in this repository, so the table reflects results supplied outside the codebase. Dataset size: not recorded in this repository. Validation methodology: not recorded in this repository.
 | Metric | Typhoon | Super Typhoon | Significance |
 | --- | --- | --- | --- |
 | Recall | 0.87 | 0.90 | Good ability to catch hazards. |
