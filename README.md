@@ -6,7 +6,7 @@ To the CodeKada Hackathon organizers, mentors, and judges, thank you for the opp
 Sheltr is a Metro Manila evacuation support system made up of three parts: an Expo app for users, a Flask API for routing and hazard scoring, and geospatial data for flood and storm-surge hazards. The app requests routes and safety data from the API. The API selects a route, scores its flood exposure, and returns safety guidance and nearby evacuation centers. The data folder contains the flood and storm-surge GeoJSON layers and river linework used by the scoring logic.
 
 ## Basis and calibration
-All hazard policy constants are based on Typhoon Carina only. Typhoon Carina is explicitly the sole calibration reference because it is the only recent and clearly documented typhoon that produced significant flooding in Metro Manila during this project’s timeframe. The calibration reference is Typhoon Carina in July 2024. No other typhoon events or flood incidents were used to calibrate weights, thresholds, or labels.
+All hazard policy constants are calibrated exclusively to Typhoon Carina (July 2024), the only recent and clearly documented typhoon that produced significant Metro Manila flooding during this project’s timeframe. No other typhoon events or flood incidents were used to calibrate weights, thresholds, or labels.
 
 ## Data layers and sources
 Flood polygons are stored in data/MetroManila_Flood_5year.json, data/MetroManila_Flood_25year.json, and data/MetroManila_Flood_100year.json. Storm-surge polygons are stored in data/MetroManila_StormSurge_SSA1.json through data/MetroManila_StormSurge_SSA4.json. NCR river linework is stored in data/NCR_Rivers_Clipped.json. These layers are GeoJSON and can be prepared or inspected in QGIS or other GIS tools.
@@ -35,7 +35,8 @@ Flood probability and safety score
 - Overlap floor factor: max_severity_weight times 0.18.
 - Minimum safety score: 0.08.
 - Flood probability is the amplified weighted severity, with a floor when any overlap is detected.
-- Flood risk equals flood probability plus elevation penalty, then clamped to 0–1. Elevation penalty is defined for extensibility and remains 0.0 because no elevation raster is loaded in this repository and no elevation-based adjustment is applied.
+- Flood risk equals flood probability plus elevation penalty, then clamped to 0–1.
+- Elevation penalty is defined for extensibility and remains 0.0 because no elevation raster is loaded in this repository and no elevation-based adjustment is applied.
 - Safety score equals 1 minus flood risk, clamped to the minimum safety score.
 
 Confidence score components
@@ -109,10 +110,10 @@ River proximity metrics
 - Distance buckets reported at 50 m, 100 m, and 150 m.
 
 ## Model results and what they mean
-The metrics below are provided by the team’s external evaluation using Typhoon Carina labeled hazard data. The dataset size, split strategy, and evaluation scripts are not stored in this repository, so the table reflects results supplied outside the codebase and should be updated with full methodology when available.
+The metrics below are provided by the team’s external evaluation using Typhoon Carina labeled hazard data. The dataset size, split strategy, and evaluation scripts are not stored in this repository, so the table reflects results supplied outside the codebase.
 | Metric | Typhoon | Super Typhoon | Significance |
 | --- | --- | --- | --- |
 | Recall | 0.87 | 0.90 | Good ability to catch hazards. |
-| Precision | 0.77 | 0.76 | About 77 percent trustworthiness for typhoon alerts and about 76 percent for super typhoon alerts. |
+| Precision | 0.77 | 0.76 | 77 percent of typhoon hazard alerts are correct; 76 percent of super typhoon alerts are correct. |
 | Accuracy | 0.73 | 0.73 | Overall correctness, with hazard presence or absence classified correctly about 73 percent of the time. |
 | Flip Rate (consistency of predictions) | 0.00 | 0.00 | No flips, or 0 percent, across different sampling resolutions. |
