@@ -32,10 +32,10 @@ Sheltr is a Metro Manila evacuation support system made up of an Expo app, a Fla
 | super_typhoon | Super typhoon scenario | Forces 100-year flood map and SSA4 storm-surge baseline. |
 
 ## Visual placeholders (replace with final images)
-![UI placeholder](docs/images/ui-placeholder.png)
-![Map overlay placeholder](docs/images/map-overlay-placeholder.png)
-![Evacuation center placeholder](docs/images/evac-center-placeholder.png)
-![Safety banner placeholder](docs/images/safety-banner-placeholder.png)
+![UI placeholder](docs/images/ui-placeholder.svg)
+![Map overlay placeholder](docs/images/map-overlay-placeholder.svg)
+![Evacuation center placeholder](docs/images/evac-center-placeholder.svg)
+![Safety banner placeholder](docs/images/safety-banner-placeholder.svg)
 These references are intentional placeholders. Replace them with real screenshots before final judging.
 
 ## Tech stack
@@ -112,7 +112,7 @@ Flip Rate measures prediction stability across sampling resolutions.
 | Metric | Typhoon Scenario | Super Typhoon Scenario | Significance |
 | --- | --- | --- | --- |
 | Recall | 0.87 | 0.90 | Good ability to catch hazards in Typhoon Carina labeled data. |
-| Precision | 0.77 | 0.76 | 77% of Typhoon Carina typhoon hazard alerts are correct; 76% of Typhoon Carina super typhoon alerts are correct. |
+| Precision | 0.77 | 0.76 | 77% of typhoon scenario hazard alerts are correct; 76% of super typhoon scenario hazard alerts are correct. |
 | Accuracy | 0.73 | 0.73 | Overall correctness, with hazard presence or absence classified correctly about 73% of the time. |
 | Flip Rate (consistency of predictions) | 0.00 | 0.00 | No flips, or 0%, across different sampling resolutions. |
 
