@@ -31,12 +31,20 @@ Sheltr is a Metro Manila evacuation support system made up of an Expo app, a Fla
 | typhoon | Typhoon scenario | Forces 25-year flood map and SSA3 storm-surge baseline. |
 | super_typhoon | Super typhoon scenario | Forces 100-year flood map and SSA4 storm-surge baseline. |
 
-## Visual placeholders (replace with final images)
-![UI placeholder](docs/images/ui-placeholder.svg)
-![Map overlay placeholder](docs/images/map-overlay-placeholder.svg)
-![Evacuation center placeholder](docs/images/evac-center-placeholder.svg)
-![Safety banner placeholder](docs/images/safety-banner-placeholder.svg)
-These references are intentional placeholders. Replace them with real screenshots before final judging.
+## Interface highlights
+![Sheltr banner - 3 preset light](docs/images/3%20preset%20light.png)
+
+The screenshots below focus on the highest-value judging views without overcrowding the README:
+
+![Homepage](docs/images/Homepage.png)
+![Route and AI panel (light mode)](docs/images/Route%26Ai-lightmode.png)
+![Zoomed flood-aware route (light mode)](docs/images/ZoomedFloodRoute-light.png)
+![Zoomed safety sandbox (light mode)](docs/images/ZoomedSandbox-light.png)
+
+## Cloud deployment notes (Railway free tier)
+- Run one device at a time when testing the deployed app. The Railway free tier (512 MB) can hit OOM under heavier concurrent usage.
+- If the cloud API errors out during testing, restart/reset and retry. Intermittent recovery can happen after reset on constrained memory.
+- Area briefing may not always work in cloud deployment. It is currently the least prioritized modal and was intentionally deprioritized for memory management.
 
 ## Tech stack
 - **Frontend**: React Native (Expo)
