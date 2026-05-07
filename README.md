@@ -62,20 +62,8 @@ Standard navigation tools such as Waze or Google Maps are not built for micro-to
 - data/ → data/ — Flood, storm-surge, and river GeoJSON
 - scripts/ → repo root scripts — Local run helpers and batch files
 
-## Repo tree
-```
-.
-├── backend/                 # api/
-├── frontend/                # app/
-├── data/
-├── docs/
-├── supabase/
-├── run-backend-local.cmd
-├── run-frontend-local.cmd
-├── start-local-temp.bat
-├── Dockerfile
-└── package.json
-```
+For the full flowchart check the link below: 
+https://drive.google.com/drive/folders/1OUB85Y_saIikoxGGAWaCRBfQYGf-enkw?usp=sharing 
 
 ## Routing and safety logic
 Routing chooses a graph route from Valhalla when available, then samples that route against flood and storm-surge polygons. A deterministic policy converts overlap metrics into flood risk, safety score, confidence score, and a go/caution/no_go decision. The full list of parameters, weights, and thresholds is documented in docs/POLICY.md.
