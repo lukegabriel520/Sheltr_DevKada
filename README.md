@@ -64,7 +64,7 @@ Go, caution, and no_go decision thresholds
 Service area and geometry limits
 - Metro Manila bounding box: latitude 14.0 to 15.2, longitude 120.0 to 122.0.
 - Flood route sampling: target spacing 30 meters, max samples 600, and a hard cap of 2,500 line vertices for flood polygon operations.
-- Hazard point scoring in flood_index.py: 0.82 if inside a flood polygon, 0.45 if within a 0.0008 degree buffer, 0.08 otherwise.
+- Hazard point scoring in flood_index.py: 0.82 if inside a flood polygon, 0.45 if within a 0.0008 degree buffer (approximately 89 meters at Metro Manila latitudes), 0.08 otherwise.
 
 Weather and flood map selection
 - Flood map thresholds for 3-hour and 24-hour rain in millimeters:
@@ -97,7 +97,7 @@ Rerouting and exclusions
 - Blocker radius: 65 meters by default via ROUTE_FLOOD_BLOCK_RADIUS_M.
 - Blocker spacing: 220 meters by default via ROUTE_FLOOD_BLOCK_SPACING_M.
 - Blockers per pass: 12 by default via ROUTE_FLOOD_BLOCKERS_PER_PASS.
-- Maximum exclude polygon circumference budget: 9,000 meters by default, derived from 90 percent of a 10,000 meter hard limit.
+- Maximum exclude polygon perimeter budget: 9,000 meters by default, derived from 90 percent of a 10,000 meter hard limit.
 - Alternate route scoring uses overlap_penalty_ratio 1.8 and max_detour_ratio 2.5.
 
 Caching and freshness
@@ -110,7 +110,7 @@ River proximity metrics
 - Distance buckets reported at 50 m, 100 m, and 150 m.
 
 ## Model results and what they mean
-The metrics below are provided by the team’s external evaluation using Typhoon Carina labeled hazard data. The dataset size, split strategy, and evaluation scripts are not stored in this repository, so the table reflects results supplied outside the codebase. Dataset size: not recorded in this repository. Validation methodology: not recorded in this repository.
+The metrics below are provided by the team’s external evaluation using Typhoon Carina labeled hazard data. The dataset size, split strategy, validation methodology, and evaluation scripts are not stored in this repository, so the table reflects results supplied outside the codebase.
 | Metric | Typhoon | Super Typhoon | Significance |
 | --- | --- | --- | --- |
 | Recall | 0.87 | 0.90 | Good ability to catch hazards. |
