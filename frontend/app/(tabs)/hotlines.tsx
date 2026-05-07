@@ -1,22 +1,40 @@
-// app/(tabs)/hotlines.jsx
-import React, { useState } from 'react';
-import { StyleSheet, View, Pressable, ScrollView } from 'react-native';
+// app/(tabs)/hotlines.tsx
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  StyleSheet,
+  View,
+  Pressable,
+  ScrollView,
+  Modal,
+  Image,
+  ActivityIndicator,
+  Alert,
+  StatusBar as RNStatusBar,
+  Platform,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as Location from 'expo-location';
+import * as Linking from 'expo-linking';
 
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { ExternalLink } from '@/components/external-link';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+import { apiService, SosCreateResponse } from '@/services/api';
+import { readCachedUserLocation } from '@/services/offlineCache';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { mkPalette } from '@/constants/sheltrTheme';
 
-/* ------------------------------ Bottom clearance ------------------------------ */
-const TABBAR_HEIGHT = 50;
-const TABBAR_BOTTOM_MARGIN = 20;
-const EXTRA_CUSHION = 20;
-const BOTTOM_CLEARANCE = TABBAR_HEIGHT + TABBAR_BOTTOM_MARGIN + EXTRA_CUSHION;
+const TABBAR_HEIGHT = 64;
+const TABBAR_BOTTOM_MARGIN = 24;
+const BOTTOM_CLEARANCE = TABBAR_HEIGHT + TABBAR_BOTTOM_MARGIN + 48;
 
-/* -------------------------------- Helpers -------------------------------- */
+/* ---- helpers ---- */
+/** Philippine emergency short codes — dial without a leading country code. */
+const PH_SHORT_CODES = new Set(['911', '117', '136', '143', '161', '122', '1623']);
+
 const telHref = (raw: string) => {
   const digits = (raw || '').replace(/[^\d+]/g, '');
+  if (PH_SHORT_CODES.has(digits)) return `tel:${digits}`;
   if (/^0\d{7,}$/.test(digits)) return `tel:+63${digits.slice(1)}`;
   if (/^[2-9]\d{6,}$/.test(digits)) return `tel:+632${digits}`;
   if (/^09\d{8}$/.test(digits)) return `tel:+63${digits.slice(1)}`;
@@ -24,53 +42,24 @@ const telHref = (raw: string) => {
   return `tel:${digits}`;
 };
 
-type PillProps = { label: string; active: boolean; onPress: () => void };
-function Pill({ label, active, onPress }: PillProps) {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={[styles.pill, active && styles.pillActive]}
-      android_ripple={{ color: 'rgba(0,0,0,0.08)', borderless: true }}
-      accessibilityRole="button"
-      accessibilityState={{ selected: !!active }}
-    >
-      <ThemedText style={[styles.pillText, active && styles.pillTextActive]}>
-        {label}
-      </ThemedText>
-    </Pressable>
-  );
-}
-
-type PhoneLinkProps = { number: string; label: string };
-function PhoneLink({ number, label }: PhoneLinkProps) {
-  return (
-    <View style={styles.phoneRow}>
-      <ThemedText style={styles.phoneLabel}>{label || ''}</ThemedText>
-  <ExternalLink href={telHref(number) as any}>
-        <ThemedText style={styles.phoneNumber}>{number}</ThemedText>
-      </ExternalLink>
-    </View>
-  );
-}
-
-/* --------------------------------- Data ---------------------------------- */
+/* ---- data ---- */
 const NATIONAL_CARDS = [
   {
     title: 'Philippine National Police (PNP)',
     items: [
-      { label: 'Hotline:', number: '(02) 722-0650' },
-      { label: 'Anti-Cybercrime Group:', number: '(02) 722-0413' },
+      { label: 'Complaints & emergencies', number: '(02) 722-0650' },
+      { label: 'Anti-Cybercrime (CRU)', number: '(02) 8414-1560' },
     ],
   },
   {
-    title: 'Metro Manila Development Authority (MMDA)',
+    title: 'Metro Manila Development Authority',
     items: [
-      { label: 'Hotline:', number: '136' },
-      { label: 'Traffic and Travel Information:', number: '(02) 882-4156 to 77 (local 333)' },
+      { label: 'Hotline', number: '136' },
+      { label: 'Traffic Info', number: '(02) 882-4156' },
     ],
   },
   {
-    title: 'Fire Department (Bureau of Fire Protection NCR)',
+    title: 'Bureau of Fire Protection NCR',
     items: [
       { label: '', number: '(02) 426-0219' },
       { label: '', number: '(02) 426-3812' },
@@ -80,9 +69,13 @@ const NATIONAL_CARDS = [
   {
     title: 'Medical Emergencies',
     items: [
-      { label: 'Red Cross:', number: '143' },
-      { label: 'Emergency:', number: '911' },
+      { label: 'Red Cross', number: '143' },
+      { label: 'Emergency', number: '911' },
     ],
+  },
+  {
+    title: 'Department of the Interior and Local Government',
+    items: [{ label: 'Citizens\' assistance desk', number: '(02) 8925-0343' }],
   },
 ];
 
@@ -90,283 +83,427 @@ const LOCAL_GROUPS = [
   {
     city: 'Marikina',
     items: [
-      { label: 'Marikina City Rescue 161:', number: '161' },
-      { label: 'DILG Marikina Hotline:', number: '8925' },
-      { label: 'Marikina City Hall:', number: '8646-0306, 8646-0462' },
+      { label: 'Rescue 161', number: '161' },
+      { label: 'City Hall', number: '(02) 8646-0462' },
     ],
   },
   {
     city: 'Manila',
     items: [
-      { label: 'Philippine National Police:', number: '117' },
-      { label: 'Manila Fire Department:', number: '(02) 8527-1405' },
+      { label: 'PNP', number: '117' },
+      { label: 'Fire Dept.', number: '(02) 8527-1405' },
     ],
   },
   {
     city: 'Quezon City',
     items: [
-      { label: 'QC Helpline 122 (24/7):', number: '122' },
-      { label: 'Emergency Ops Center:', number: '0977-031-2892 (Globe), 0947-885-9929 (Smart)' },
-      { label: 'Medical & Rescue:', number: '0947-884-7498 (Smart)' },
+      { label: 'Helpline (24/7)', number: '122' },
+      { label: 'Emergency Ops', number: '0977-031-2892' },
+      { label: 'Medical & Rescue', number: '0947-884-7498' },
     ],
   },
   {
     city: 'Pasig',
     items: [
-      { label: 'Pasig City DRRMO Emergency:', number: '8643-0000' },
-      { label: 'Fire:', number: '8641-2815' },
-      { label: 'Police:', number: '8477-7953' },
-      { label: "Children's Hospital:", number: '8643-2222' },
-      { label: 'General Hospital:', number: '8643-3333, 8642-7379' },
+      { label: 'DRRMO', number: '8643-0000' },
+      { label: 'Fire', number: '8641-2815' },
+      { label: 'Police', number: '8477-7953' },
+      { label: 'General Hospital', number: '8643-3333' },
     ],
   },
   {
     city: 'Taguig',
     items: [
-      { label: 'Police Emergency:', number: '1623 or 117' },
-      { label: 'Fire:', number: '(02) 542-3695 / 8642-9882' },
+      { label: 'Police Emergency', number: '1623' },
+      { label: 'Fire', number: '(02) 542-3695' },
     ],
   },
 ];
 
-/* -------------------------------- Screen --------------------------------- */
+type HotlineItem = { label: string; number: string };
+
+/* ---- screen ---- */
 export default function HotlinesScreen() {
-  const [tab, setTab] = useState('national');
+  const scheme = useColorScheme();
+  const isDark = scheme === 'dark';
+  const p = mkPalette(isDark);
+
+  const [tab, setTab] = useState<'national' | 'local'>('national');
+  const [sosBusy, setSosBusy] = useState(false);
+  const [sosModalVisible, setSosModalVisible] = useState(false);
+  const [sosSession, setSosSession] = useState<SosCreateResponse | null>(null);
+  const [sosHotlineLabel, setSosHotlineLabel] = useState('');
+
+  const createSos = useCallback(async (item: HotlineItem, ownerLabel: string) => {
+    setSosBusy(true);
+    try {
+      const cached = await readCachedUserLocation();
+      let lat = cached?.latitude ?? null;
+      let lng = cached?.longitude ?? null;
+      try {
+        const perm = await Location.requestForegroundPermissionsAsync();
+        if (perm.status === 'granted') {
+          const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+          lat = loc.coords.latitude;
+          lng = loc.coords.longitude;
+        }
+      } catch { /* keep cached fallback */ }
+      if (typeof lat !== 'number' || typeof lng !== 'number') {
+        Alert.alert('Location needed', 'Open the Map tab first so Sheltr can cache your location.');
+        return;
+      }
+      const payload = await apiService.createSosSession({
+        hotline_name: ownerLabel,
+        hotline_number: item.number,
+        latitude: lat,
+        longitude: lng,
+      });
+      setSosHotlineLabel(`${ownerLabel} · ${item.number}`);
+      setSosSession(payload);
+      setSosModalVisible(true);
+    } catch (err) {
+      Alert.alert('SOS QR unavailable', err instanceof Error ? err.message : 'Could not create SOS QR.');
+    } finally {
+      setSosBusy(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!sosModalVisible || !sosSession?.session_id) return;
+    let active = true;
+    const beat = async () => {
+      try {
+        const cached = await readCachedUserLocation();
+        let lat = cached?.latitude ?? null;
+        let lng = cached?.longitude ?? null;
+        try {
+          const perm = await Location.requestForegroundPermissionsAsync();
+          if (perm.status === 'granted') {
+            const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+            lat = loc.coords.latitude;
+            lng = loc.coords.longitude;
+          }
+        } catch { /* fallback */ }
+        if (!active || typeof lat !== 'number' || typeof lng !== 'number') return;
+        await apiService.heartbeatSosSession({ session_id: sosSession.session_id, latitude: lat, longitude: lng });
+      } catch (err) {
+        console.warn('SOS heartbeat failed:', err);
+      }
+    };
+    beat();
+    const id = setInterval(beat, 5000);
+    return () => { active = false; clearInterval(id); };
+  }, [sosModalVisible, sosSession?.session_id]);
+
+  const topPad = Platform.OS === 'android' ? (RNStatusBar.currentHeight ?? 0) + 8 : 8;
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: BOTTOM_CLEARANCE }}
-      >
-        <View style={styles.content}>
-          {/* Header */}
-          <View style={styles.titleWrap}>
-            <ThemedText style={styles.title}>Emergency Hotlines</ThemedText>
-          </View>
-
-          {/* Tabs */}
-          <View style={styles.tabsContainer}>
-            <Pill label="National" active={tab === 'national'} onPress={() => setTab('national')} />
-            <Pill label="Local" active={tab === 'local'} onPress={() => setTab('local')} />
-          </View>
-
-          {/* 911 Banner */}
-          <View style={styles.banner}>
-            <View style={styles.bannerLeft}>
-              <ThemedText style={styles.bannerTitle}>National Hotline</ThemedText>
-              <ThemedText style={styles.bannerSubtitle}>For all emergencies:</ThemedText>
-            </View>
-            <View style={styles.bannerRight}>
-              <IconSymbol name="phone.fill" size={18} color="#0B5AA2" />
-              <ExternalLink href={telHref('911') as any}>
-                <ThemedText style={styles.bannerNumber}>911</ThemedText>
-              </ExternalLink>
+    <LinearGradient colors={[p.bg1, p.bg2]} style={styles.root}>
+      <RNStatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor="transparent"
+        translucent
+      />
+      <SafeAreaView style={{ flex: 1 }} edges={['left', 'right', 'bottom']}>
+        <ScrollView
+          style={{ flex: 1 }}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: BOTTOM_CLEARANCE, paddingTop: topPad }}
+        >
+          <View style={styles.headerWrap}>
+            <View>
+              <ThemedText style={[styles.headerKicker, { color: p.muted }]}>Emergency</ThemedText>
+              <ThemedText style={[styles.headerTitle, { color: p.text }]}>Hotlines</ThemedText>
             </View>
           </View>
 
-          {/* Cards */}
-          {tab === 'national' ? (
-            <View style={styles.cardsContainer}>
-              {NATIONAL_CARDS.map((card) => (
-                <View key={card.title} style={styles.card}>
-                  <ThemedText style={styles.cardTitle}>{card.title}</ThemedText>
-                  {card.items.map((item, i) => (
-                    <View key={i} style={styles.cardItem}>
+          <Pressable
+            onPress={() => Linking.openURL(telHref('911'))}
+            accessibilityRole="button"
+            accessibilityLabel="Call nationwide emergency number 911"
+            style={[styles.hero911, { backgroundColor: p.evacCardBg }]}
+          >
+            <ThemedText style={[styles.hero911Kicker, { color: p.accent }]}>Nationwide emergency</ThemedText>
+            <ThemedText style={[styles.hero911Digits, { color: '#FFFFFF' }]}>911</ThemedText>
+            <ThemedText style={[styles.hero911Body, { color: 'rgba(255,255,255,0.82)' }]}>
+              Police, fire, ambulance, and EMS — free from any phone.
+            </ThemedText>
+            <View style={[styles.hero911Cta, { backgroundColor: p.accent }]}>
+              <ThemedText style={[styles.hero911CtaText, { color: '#FFFFFF' }]}>Tap to call now</ThemedText>
+            </View>
+          </Pressable>
+
+          <View style={styles.tabBar}>
+            {(['national', 'local'] as const).map((t) => (
+              <Pressable key={t} onPress={() => setTab(t)} style={styles.tabHit}>
+                <ThemedText
+                  style={[
+                    styles.tabBarLabel,
+                    { color: tab === t ? p.text : p.muted },
+                    tab === t && { fontWeight: '800' },
+                  ]}
+                >
+                  {t === 'national' ? 'National' : 'Local'}
+                </ThemedText>
+                <View style={[styles.tabUnderline, { backgroundColor: tab === t ? p.accent : 'transparent' }]} />
+              </Pressable>
+            ))}
+          </View>
+
+          <View style={styles.sectionList}>
+            {(tab === 'national' ? NATIONAL_CARDS : LOCAL_GROUPS).map((group, gi) => (
+              <View key={'title' in group ? group.title : group.city} style={gi > 0 ? styles.sectionSpacer : undefined}>
+                <ThemedText style={[styles.sectionHeading, { color: p.muted }]}>
+                  {'title' in group ? group.title : group.city}
+                </ThemedText>
+                {group.items.map((item, i) => (
+                  <View
+                    key={i}
+                    style={[
+                      styles.hotlineRow,
+                      i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: p.cardBorder },
+                    ]}
+                  >
+                    <View style={styles.hotlineMain}>
                       {item.label ? (
-                        <ThemedText style={styles.itemLabel}>• {item.label} </ThemedText>
+                        <ThemedText style={[styles.hotlineLabel, { color: p.muted }]}>{item.label}</ThemedText>
                       ) : null}
                       <ExternalLink href={telHref(item.number) as any}>
-                        <ThemedText style={styles.itemNumber}>{item.number}</ThemedText>
+                        <ThemedText style={[styles.hotlineNumber, { color: p.text }]}>{item.number}</ThemedText>
                       </ExternalLink>
                     </View>
-                  ))}
-                </View>
-              ))}
-            </View>
-          ) : (
-            <View style={styles.cardsContainer}>
-              {LOCAL_GROUPS.map((group) => (
-                <View key={group.city} style={styles.card}>
-                  <ThemedText style={styles.cityTitle}>{group.city}</ThemedText>
-                  {group.items.map((item, i) => (
-                    <View key={i} style={styles.cardItem}>
-                      <ThemedText style={styles.itemLabel}>• {item.label} </ThemedText>
-                      <ExternalLink href={telHref(item.number) as any}>
-                        <ThemedText style={styles.itemNumber}>{item.number}</ThemedText>
-                      </ExternalLink>
+                    <View style={styles.hotlineActions}>
+                      <Pressable
+                        style={[styles.pillGhost, { backgroundColor: p.chip, borderColor: p.chipBorder }]}
+                        onPress={() => Linking.openURL(telHref(item.number))}
+                      >
+                        <ThemedText style={[styles.pillGhostText, { color: p.text }]}>Call</ThemedText>
+                      </Pressable>
+                      <Pressable
+                        style={[styles.pillAccent, { backgroundColor: p.accent }]}
+                        onPress={() => createSos(item, 'title' in group ? group.title : group.city)}
+                        disabled={sosBusy}
+                      >
+                        <ThemedText style={[styles.pillAccentText, { color: '#FFFFFF' }]}>SOS QR</ThemedText>
+                      </Pressable>
                     </View>
-                  ))}
-                </View>
-              ))}
-            </View>
-          )}
+                  </View>
+                ))}
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
 
-          <View style={{ height: 8 }} />
+      {/* SOS modal */}
+      <Modal visible={sosModalVisible} transparent animationType="fade" onRequestClose={() => setSosModalVisible(false)}>
+        <View style={styles.modalBackdrop}>
+          <View style={[styles.sosCard, { backgroundColor: p.card, borderColor: p.cardBorder }]}>
+            <ThemedText style={[styles.sosTitle, { color: p.text }]}>SOS QR Ready</ThemedText>
+            <ThemedText style={[styles.sosSub, { color: p.muted }]}>{sosHotlineLabel}</ThemedText>
+            {sosBusy ? (
+              <View style={{ paddingVertical: 32 }}>
+                <ActivityIndicator color={p.accent} />
+              </View>
+            ) : sosSession ? (
+              <>
+                <Image
+                  source={{ uri: `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(sosSession.qr_payload)}` }}
+                  style={[styles.sosQr, { backgroundColor: '#fff' }]}
+                />
+                <ThemedText style={[styles.sosCode, { color: p.muted }]}>Session · {sosSession.session_id.slice(0, 8)}…</ThemedText>
+                <ThemedText style={[styles.sosHint, { color: p.muted }]}>
+                  Hotline can scan this QR to open the Sheltr rescue feed for live tracking.
+                </ThemedText>
+                <View style={styles.sosActions}>
+                  <Pressable
+                    style={[styles.sosPrimaryBtn, { backgroundColor: p.accent }]}
+                    onPress={() => Linking.openURL(sosSession.rescue_url)}
+                  >
+                    <ThemedText style={[styles.sosPrimaryBtnText, { color: '#FFFFFF' }]}>Open rescue feed</ThemedText>
+                  </Pressable>
+                  <Pressable
+                    style={[styles.sosSecondaryBtn, { backgroundColor: p.chip, borderColor: p.cardBorder }]}
+                    onPress={() => setSosModalVisible(false)}
+                  >
+                    <ThemedText style={[styles.sosSecondaryBtnText, { color: p.text }]}>Close</ThemedText>
+                  </Pressable>
+                </View>
+              </>
+            ) : null}
+          </View>
         </View>
-      </ScrollView>
-    </View>
+      </Modal>
+    </LinearGradient>
   );
 }
 
-/* -------------------------------- Styles --------------------------------- */
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  content: {
-    paddingTop: 60,
-    paddingHorizontal: 20,
-  },
-
-  /* Enhanced Header */
-  titleWrap: {
-    paddingVertical: 14,
-    paddingHorizontal: 14,
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 26,
-    lineHeight: 35,
-    fontWeight: '800',
-    color: '#0B3D5B',
-    textAlign: 'center',
-    letterSpacing: 0.2,
-    fontFamily: Fonts.rounded,
-  },
-
-  // Tabs
-  tabsContainer: {
+  root: { flex: 1 },
+  headerWrap: {
     flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
-    marginBottom: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginBottom: 4,
   },
-  pill: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 24,
-    borderRadius: 25,
-    backgroundColor: '#F3F4F6',
-    alignItems: 'center',
-    justifyContent: 'center',
+  headerKicker: {
+    fontSize: 11,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
-  pillActive: {
-    backgroundColor: '#0B3D5B',
+  headerTitle: {
+    fontSize: 26,
+    fontWeight: '900',
+    lineHeight: 30,
   },
-  pillText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#6B7280',
-    fontFamily: Fonts.rounded,
+  hero911: {
+    marginHorizontal: 16,
+    marginBottom: 22,
+    borderRadius: 18,
+    paddingHorizontal: 22,
+    paddingVertical: 22,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 14,
+    elevation: 5,
   },
-  pillTextActive: {
-    color: '#FFFFFF',
+  hero911Kicker: {
+    fontSize: 11,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
+    marginBottom: 10,
   },
-
-  // Banner
-  banner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#FFF1F2',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
-    borderLeftWidth: 4,
-    borderLeftColor: '#FB7185',
-    borderWidth: 1,
-    borderColor: '#FECDD3',
+  hero911Digits: {
+    fontSize: 54,
+    fontWeight: '900',
+    fontVariant: ['tabular-nums'],
+    letterSpacing: -2,
+    lineHeight: 56,
+    marginBottom: 10,
   },
-  bannerLeft: {
-    flex: 1,
-  },
-  bannerTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#0B3D5B',
-    marginBottom: 2,
-    fontFamily: Fonts.rounded,
-  },
-  bannerSubtitle: {
+  hero911Body: {
     fontSize: 13,
-    color: '#6B7280',
+    lineHeight: 19,
+    fontWeight: '500',
+    marginBottom: 18,
   },
-  bannerRight: {
-    flexDirection: 'row',
+  hero911Cta: {
+    borderRadius: 999,
+    paddingVertical: 13,
     alignItems: 'center',
+    alignSelf: 'stretch',
+  },
+  hero911CtaText: {
+    fontSize: 14,
+    fontWeight: '800',
+    letterSpacing: 0.3,
+  },
+  tabBar: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    marginBottom: 16,
     gap: 8,
   },
-  bannerNumber: {
-    fontSize: 24,
-    fontWeight: '900',
-    color: '#9F1239',
-    fontFamily: Fonts.rounded,
+  tabHit: {
+    flex: 1,
+    alignItems: 'center',
+    paddingTop: 6,
+    paddingBottom: 2,
   },
-
-  // Cards
-  cardsContainer: {
-    gap: 16,
-  },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  cardTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: '#0B3D5B',
-    marginBottom: 12,
-    fontFamily: Fonts.rounded,
-  },
-  cityTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#0B3D5B',
-    marginBottom: 12,
-    fontFamily: Fonts.rounded,
-  },
-  cardItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 8,
-    flexWrap: 'wrap',
-  },
-  itemLabel: {
-    fontSize: 14,
-    color: '#374151',
-    lineHeight: 20,
-  },
-  itemNumber: {
+  tabBarLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#0B3D5B',
-    lineHeight: 20,
   },
-
-  phoneRow: {
+  tabUnderline: {
+    marginTop: 10,
+    height: 3,
+    width: '100%',
+    borderRadius: 2,
+  },
+  sectionList: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+  },
+  sectionSpacer: {
+    marginTop: 26,
+  },
+  sectionHeading: {
+    fontSize: 11,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 0.9,
+    marginBottom: 12,
+  },
+  hotlineRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingVertical: 14,
+    gap: 12,
   },
-  phoneLabel: {
-    fontSize: 14,
-    color: '#374151',
+  hotlineMain: {
+    flex: 1,
+    minWidth: 0,
   },
-  phoneNumber: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#0B3D5B',
+  hotlineLabel: { fontSize: 11, fontWeight: '600', marginBottom: 3 },
+  hotlineNumber: { fontSize: 17, fontWeight: '700', fontVariant: ['tabular-nums'] },
+  hotlineActions: { flexDirection: 'row', gap: 8, flexShrink: 0 },
+  pillGhost: {
+    borderRadius: 999,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    justifyContent: 'center',
   },
+  pillGhostText: { fontSize: 12, fontWeight: '700' },
+  pillAccent: {
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    justifyContent: 'center',
+  },
+  pillAccentText: { fontSize: 12, fontWeight: '700' },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(15,23,42,0.55)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  sosCard: {
+    width: '100%',
+    maxWidth: 400,
+    borderRadius: 18,
+    borderWidth: 1,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 24,
+    elevation: 12,
+  },
+  sosTitle: { fontSize: 20, fontWeight: '900' },
+  sosSub: { fontSize: 12, marginTop: 3, textAlign: 'center' },
+  sosQr: { width: 220, height: 220, borderRadius: 12, marginTop: 14 },
+  sosCode: { fontSize: 11, fontWeight: '700', marginTop: 8 },
+  sosHint: { fontSize: 12, lineHeight: 18, textAlign: 'center', marginTop: 6, paddingHorizontal: 10 },
+  sosActions: { width: '100%', gap: 8, marginTop: 14 },
+  sosPrimaryBtn: {
+    borderRadius: 999,
+    paddingVertical: 13,
+    alignItems: 'center',
+  },
+  sosPrimaryBtnText: { fontSize: 15, fontWeight: '800' },
+  sosSecondaryBtn: {
+    borderRadius: 999,
+    borderWidth: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  sosSecondaryBtnText: { fontSize: 14, fontWeight: '700' },
 });
