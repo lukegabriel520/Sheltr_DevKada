@@ -1,5 +1,9 @@
 # Sheltr
 
+<p align="center">
+  <img src="docs/images/banner.png" alt="Sheltr repository banner" width="100%" />
+</p>
+
 Sheltr is a silent guardian for Metro Manila evacuation decisions. It focuses on safety-first routing when floods and storm surge turn ordinary streets into impassable segments.
 
 ## Project status: pre-planning
@@ -31,11 +35,7 @@ Sheltr is a Metro Manila evacuation support system made up of an Expo app, a Fla
 | typhoon | Typhoon scenario | Forces 25-year flood map and SSA3 storm-surge baseline. |
 | super_typhoon | Super typhoon scenario | Forces 100-year flood map and SSA4 storm-surge baseline. |
 
-## Interface highlights
-<p align="center">
-  <img src="docs/images/3%20preset%20light.png" alt="Sheltr app banner preview" width="100%" />
-</p>
-
+## UI Samples
 Screenshots below are organized by user flow and what each screen is meant to communicate.
 
 ### Entry and presets
