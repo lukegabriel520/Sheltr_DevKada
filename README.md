@@ -100,27 +100,6 @@ provides the same local inspection workflow in dark theme.
 └── package.json
 ```
 
-## Installation guide
-### Backend (Flask API)
-1. `cd backend`
-2. `python -m venv .venv` and activate the venv
-3. `pip install -r requirements.txt`
-4. Create `.env` in `backend/` with:
-   - `SHELTR_API_KEY` (optional but recommended for protected endpoints)
-   - `STADIA_API_KEY` (required for Valhalla routing)
-   - `OPENROUTER_API_KEY` (optional for AI briefings)
-5. Start the API:
-   - `python safe_server.py` (recommended)
-   - `python app.py` (WSGI-compatible entrypoint)
-
-### Frontend (Expo app)
-1. `cd frontend`
-2. `npm install`
-3. Create `.env` in `frontend/` with:
-   - `EXPO_PUBLIC_API_URL=http://127.0.0.1:5000`
-   - `EXPO_PUBLIC_SHELTR_API_KEY` (optional, if the API enforces a key)
-4. `npx expo start`
-
 ## Routing and safety logic (summary)
 Routing chooses a graph route from Valhalla when available, then samples that route against flood and storm-surge polygons. A deterministic policy converts overlap metrics into flood risk, safety score, confidence score, and a go/caution/no_go decision. The full list of parameters, weights, and thresholds is documented in **docs/POLICY.md**.
 
