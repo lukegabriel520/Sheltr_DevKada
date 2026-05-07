@@ -64,7 +64,7 @@ Go, caution, and no_go decision thresholds
 Service area and geometry limits
 - Metro Manila bounding box: latitude 14.0 to 15.2, longitude 120.0 to 122.0.
 - Flood route sampling: target spacing 30 meters, max samples 600, and a hard cap of 2,500 line vertices for flood polygon operations.
-- Hazard point scoring in flood_index.py: 0.82 if inside a flood polygon, 0.45 if within a buffer of roughly 90 meters at Metro Manila latitude (represented in code as 0.0008 degrees), 0.08 otherwise.
+- Hazard point scoring in flood_index.py: 0.82 if inside a flood polygon, 0.45 if within a buffer of roughly 86 meters at Metro Manila latitude (represented in code as 0.0008 degrees), 0.08 otherwise.
 
 Weather and flood map selection
 - Flood map thresholds for 3-hour and 24-hour rain in millimeters:
@@ -93,11 +93,11 @@ Scenario mapping and overlays
 - Auto overlays clip features to a 12 km radius around the user. Manual scenario clipping uses 48 km and is configurable via SHELTR_MANUAL_SCENARIO_OVERLAY_RADIUS_KM.
 
 Rerouting and exclusions
-- Max reroute attempts: 4 by default via ROUTE_FLOOD_REROUTE_MAX.
+- Max reroute attempts: 4 by default via the ROUTE_FLOOD_REROUTE_MAX environment variable.
 - Blocker radius: 65 meters by default via ROUTE_FLOOD_BLOCK_RADIUS_M.
 - Blocker spacing: 220 meters by default via ROUTE_FLOOD_BLOCK_SPACING_M.
 - Blockers per pass: 12 by default via ROUTE_FLOOD_BLOCKERS_PER_PASS.
-- Maximum exclude polygon perimeter budget: 9,000 meters by default, derived from 90 percent of a 10,000 meter hard limit.
+- Maximum exclude polygon perimeter budget: computed at runtime as 90 percent of the STADIA_EXCLUDE_CIRCUMFERENCE_LIMIT_M constant (10,000 meters), resulting in 9,000 meters when the environment override is not set.
 - Alternate route scoring uses overlap_penalty_ratio 1.8 and max_detour_ratio 2.5.
 
 Caching and freshness
@@ -114,6 +114,6 @@ The metrics below are provided by the team’s external evaluation using Typhoon
 | Metric | Typhoon Scenario | Super Typhoon Scenario | Significance |
 | --- | --- | --- | --- |
 | Recall | 0.87 | 0.90 | Good ability to catch hazards in Typhoon Carina labeled data. |
-| Precision | 0.77 | 0.76 | 77 percent of Typhoon Carina typhoon hazard alerts are correct; 76 percent of Typhoon Carina super typhoon alerts are correct. |
-| Accuracy | 0.73 | 0.73 | Overall correctness, with hazard presence or absence classified correctly about 73 percent of the time. |
-| Flip Rate (consistency of predictions) | 0.00 | 0.00 | No flips, or 0 percent, across different sampling resolutions. |
+| Precision | 0.77 | 0.76 | 77% of Typhoon Carina typhoon hazard alerts are correct; 76% of Typhoon Carina super typhoon alerts are correct. |
+| Accuracy | 0.73 | 0.73 | Overall correctness, with hazard presence or absence classified correctly about 73% of the time. |
+| Flip Rate (consistency of predictions) | 0.00 | 0.00 | No flips, or 0%, across different sampling resolutions. |
