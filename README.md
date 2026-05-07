@@ -36,6 +36,7 @@ Sheltr is a Metro Manila evacuation support system made up of an Expo app, a Fla
 ![Map overlay placeholder](docs/images/map-overlay-placeholder.png)
 ![Evacuation center placeholder](docs/images/evac-center-placeholder.png)
 ![Safety banner placeholder](docs/images/safety-banner-placeholder.png)
+These references are intentional placeholders. Replace them with real screenshots before final judging.
 
 ## Tech stack
 - **Frontend**: React Native (Expo)

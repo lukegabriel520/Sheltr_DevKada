@@ -71,14 +71,14 @@ Service area and geometry limits
 
 Weather and flood map selection
 - Flood map thresholds for 3-hour and 24-hour rain in millimeters:
-  - 100-year map: 80 mm in 3 hours or 150 mm in 24 hours.
-  - 25-year map: 50 mm in 3 hours or 100 mm in 24 hours.
-  - 5-year map: 20 mm in 3 hours or 50 mm in 24 hours.
+- 100-year map: 80 mm in 3 hours or 150 mm in 24 hours.
+- 25-year map: 50 mm in 3 hours or 100 mm in 24 hours.
+- 5-year map: 20 mm in 3 hours or 50 mm in 24 hours.
 - River escalation: if `river_discharge / river_discharge_p75` exceeds 1.2, map severity escalates one level.
 - Var level thresholds for 3-hour rain in millimeters:
-  - 5-year: Var 1 at 20, Var 2 at 15, Var 3 at 10.
-  - 25-year: Var 1 at 50, Var 2 at 40, Var 3 at 30.
-  - 100-year: Var 1 at 80, Var 2 at 65, Var 3 at 50.
+- 5-year: Var 1 at 20, Var 2 at 15, Var 3 at 10.
+- 25-year: Var 1 at 50, Var 2 at 40, Var 3 at 30.
+- 100-year: Var 1 at 80, Var 2 at 65, Var 3 at 50.
 
 Storm-surge selection
 - Onshore wind window: 200° to 340°.
