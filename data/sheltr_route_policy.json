@@ -1,0 +1,84 @@
+{
+  "policy_version": "2026-05-06.0",
+  "notes": "Sheltr deterministic route policy. All thresholds live here so changes do not require code edits. Calibrate from data/incidents/*.json (Carina labels) before tightening go/no-go.",
+  "scoring": {
+    "var_class_weights": {
+      "1": 1.0,
+      "2": 0.7,
+      "3": 0.45
+    },
+    "haz_class_weights": {
+      "1": 1.0,
+      "2": 0.7,
+      "3": 0.45
+    },
+    "flood_map_severity_multipliers": {
+      "5": 1.0,
+      "25": 1.5,
+      "100": 2.5
+    },
+    "storm_surge_severity_multipliers": {
+      "0": 1.0,
+      "1": 1.0,
+      "2": 1.0,
+      "3": 1.5,
+      "4": 2.5
+    },
+    "weighted_severity_amplifier": 3.0,
+    "weighted_severity_amplifier_cap": 1.0,
+    "overlap_floor_min": 0.10,
+    "overlap_floor_max_severity_factor": 0.18
+  },
+  "safety": {
+    "min_safety_score": 0.08
+  },
+  "confidence": {
+    "components": {
+      "graph_route_yes": 0.45,
+      "graph_route_no": 0.10,
+      "flood_overlay_loaded_yes": 0.20,
+      "flood_overlay_loaded_no": 0.05,
+      "scenario_auto": 0.10,
+      "scenario_manual": 0.07,
+      "no_storm_overlay_error": 0.05,
+      "waterway_layer_loaded": 0.02
+    },
+    "data_freshness": {
+      "missing_score": 0.05,
+      "fresh_within_seconds": 120.0,
+      "fresh_score": 0.10,
+      "warm_within_seconds": 600.0,
+      "warm_score": 0.07,
+      "stale_score": 0.03
+    },
+    "reroute_health": {
+      "attempted_but_failed_penalty": -0.10,
+      "overlap_remaining_penalty": -0.05,
+      "healthy_score": 0.0
+    },
+    "labels": {
+      "high_min": 0.85,
+      "moderate_min": 0.6,
+      "low_min": 0.35
+    }
+  },
+  "decision": {
+    "go_no_go": {
+      "block_if_overlap_fraction_at_least": 0.35,
+      "block_if_max_severity_weight_at_least": 2.5,
+      "block_if_no_graph_route": true,
+      "block_if_reroute_exhausted_with_overlap": true,
+      "block_if_confidence_below": 0.35
+    },
+    "caution_if": {
+      "overlap_fraction_at_least": 0.10,
+      "confidence_below": 0.60,
+      "max_severity_weight_at_least": 1.0
+    },
+    "labels": {
+      "go": "go",
+      "caution": "caution",
+      "no_go": "no_go"
+    }
+  }
+}

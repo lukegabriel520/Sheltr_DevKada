@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "description": "Edit this file to change notification copy and risk thresholds without code changes.",
+  "onboarding_when_no_risk_data": [
+    {
+      "id": "system_1",
+      "title": "Sheltr is ready",
+      "message": "Your evacuation map and hotlines are available offline when stored on device.",
+      "fullMessage": "Thank you for using Sheltr. Remember: this app supports your planning, but official warnings always come from PAGASA and your local government.",
+      "type": "safety_update",
+      "priority": "low",
+      "hours_ago": 2,
+      "read": true
+    },
+    {
+      "id": "system_2",
+      "title": "Location helps routing",
+      "message": "When GPS is on, Sheltr can suggest safer road routes and nearby shelters.",
+      "fullMessage": "Location is used on your device to find routes and briefings. You can turn it off anytime in system settings.",
+      "type": "safety_update",
+      "priority": "low",
+      "hours_ago": 1,
+      "read": false
+    }
+  ],
+  "risk_bands": [
+    {
+      "id": "high",
+      "min_average_risk": 0.7,
+      "risk_level": "high",
+      "scripted_notifications": [
+        {
+          "id": "risk_script_high",
+          "title": "High flood risk nearby",
+          "message": "Prepare to move early, avoid low roads, and keep go-bags and power banks ready.",
+          "fullMessage": "Risk is currently high in your area. Charge phones and power banks now, waterproof important documents, and monitor barangay/PAGASA updates every 30-60 minutes. If water rises quickly, move to higher ground immediately.",
+          "type": "flood_alert",
+          "priority": "critical",
+          "minutes_ago": 8,
+          "read": false
+        }
+      ],
+      "ai_notification_meta": {
+        "type": "flood_alert",
+        "priority": "critical"
+      }
+    },
+    {
+      "id": "moderate",
+      "min_average_risk": 0.4,
+      "risk_level": "moderate",
+      "scripted_notifications": [
+        {
+          "id": "risk_script_moderate",
+          "title": "Moderate risk: prepare now",
+          "message": "Prepare raincoats, flashlights, extra batteries, and keep essentials in one easy-to-carry bag.",
+          "fullMessage": "Flood risk is moderate at your current location. Prepare rain gear, charge devices, store drinking water, and review your nearest evacuation center in Sheltr. Travel only if needed and avoid roads with poor drainage.",
+          "type": "weather_warning",
+          "priority": "medium",
+          "minutes_ago": 16,
+          "read": false
+        }
+      ],
+      "ai_notification_meta": {
+        "type": "flood_alert",
+        "priority": "medium"
+      }
+    },
+    {
+      "id": "low",
+      "min_average_risk": 0.0,
+      "risk_level": "low",
+      "scripted_notifications": [
+        {
+          "id": "risk_script_low",
+          "title": "Low risk: stay ready",
+          "message": "Conditions look manageable. Keep monitoring updates and keep your emergency kit accessible.",
+          "fullMessage": "Current flood risk is low, but weather can change quickly. Keep your flashlight, medicine, IDs, and contacts ready, and continue checking official local advisories.",
+          "type": "safety_update",
+          "priority": "low",
+          "minutes_ago": 22,
+          "read": false
+        }
+      ],
+      "ai_notification_meta": {
+        "type": "safety_update",
+        "priority": "low"
+      }
+    }
+  ]
+}
