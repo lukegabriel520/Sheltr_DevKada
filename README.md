@@ -1,9 +1,8 @@
-# Sheltr
-
 <p align="center">
   <img src="docs/images/banner.png" alt="Sheltr repository banner" width="100%" />
 </p>
 
+# Sheltr
 Sheltr is a silent guardian for Metro Manila evacuation decisions. It focuses on safety-first routing when floods and storm surge turn ordinary streets into impassable segments.
 
 ## Project status: pre-planning
@@ -36,37 +35,35 @@ Sheltr is a Metro Manila evacuation support system made up of an Expo app, a Fla
 | super_typhoon | Super typhoon scenario | Forces 100-year flood map and SSA4 storm-surge baseline. |
 
 ## UI Samples
-Screenshots below are organized by user flow and what each screen is meant to communicate.
 
-### Entry and presets
 ![Homepage](docs/images/Homepage.png)
-`Homepage` is the first screen users see. It is where users start a route check and select a hazard scenario before requesting guidance.
+is the first screen users see. It is where users start a route check and select a hazard scenario before requesting guidance.
 
 ![3 preset light](docs/images/3%20preset%20light.png)
-`3 preset light` shows the light-theme preset view used for quick route checks in normal viewing conditions.
+shows the light-theme preset view used for quick route checks in normal viewing conditions.
 
 ![3 preset dark](docs/images/3%20preset%20dark.png)
-`3 preset dark` shows the same preset workflow in dark theme for low-light readability and visual comfort.
+shows the same preset workflow in dark theme for low-light readability and visual comfort.
 
 ### Route output and decision support
 ![Route and AI panel light mode](docs/images/Route%26Ai-lightmode.png)
-`Route&Ai-lightmode` shows route output, decision support cards, and summary guidance in light theme. This is where users interpret whether a route is safer, borderline, or unsafe.
+shows route output, decision support cards, and summary guidance in light theme. This is where users interpret whether a route is safer, borderline, or unsafe.
 
 ![Route and AI panel dark mode](docs/images/Route%26Ai-dark.png)
-`Route&Ai-dark` shows the same route and guidance panel in dark theme to confirm parity across themes.
+shows the same route and guidance panel in dark theme to confirm parity across themes.
 
 ### Map evidence and local context
 ![Zoomed flood route light mode](docs/images/ZoomedFloodRoute-light.png)
-`ZoomedFloodRoute-light` shows a zoomed route over hazard context in light theme so users can inspect where risk intersects the path.
+shows a zoomed route over hazard context in light theme so users can inspect where risk intersects the path.
 
 ![Zoomed flood route dark mode](docs/images/ZoomedFloodRoute-dark.png)
-`ZoomedFloodRoute-dark` is the dark-theme counterpart of the same route inspection view.
+is the dark-theme counterpart of the same route inspection view.
 
 ![Zoomed sandbox light mode](docs/images/ZoomedSandbox-light.png)
-`ZoomedSandbox-light` shows detailed map inspection in light theme for local-area checking before movement.
+shows detailed map inspection in light theme for local-area checking before movement.
 
 ![Zoomed sandbox dark mode](docs/images/ZoomedSandbox-dark.png)
-`ZoomedSandbox-dark` provides the same local inspection workflow in dark theme.
+provides the same local inspection workflow in dark theme.
 
 ## Cloud deployment notes (Railway free tier)
 - Run one device at a time when testing the deployed app. The Railway free tier (512 MB) can hit OOM under heavier concurrent usage.
