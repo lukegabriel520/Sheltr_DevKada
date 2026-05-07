@@ -35,7 +35,7 @@ Flood probability and safety score
 - Overlap floor factor: max_severity_weight times 0.18.
 - Minimum safety score: 0.08.
 - Flood probability is the amplified weighted severity, with a floor when any overlap is detected.
-- Flood risk equals flood probability plus elevation penalty, then clamped to 0–1. Elevation penalty is defined as a parameter but remains 0.0 because no elevation raster is loaded in this repository.
+- Flood risk equals flood probability plus elevation penalty, then clamped to 0–1. Elevation penalty is defined for extensibility and remains 0.0 because no elevation raster is loaded in this repository and no elevation-based adjustment is applied.
 - Safety score equals 1 minus flood risk, clamped to the minimum safety score.
 
 Confidence score components
@@ -109,7 +109,7 @@ River proximity metrics
 - Distance buckets reported at 50 m, 100 m, and 150 m.
 
 ## Model results and what they mean
-The metrics below are provided by the team’s external evaluation. The dataset and evaluation scripts are not stored in this repository, so the table reflects results supplied outside the codebase.
+The metrics below are provided by the team’s external evaluation using Typhoon Carina labeled hazard data. The dataset size, split strategy, and evaluation scripts are not stored in this repository, so the table reflects results supplied outside the codebase and should be updated with full methodology when available.
 | Metric | Typhoon | Super Typhoon | Significance |
 | --- | --- | --- | --- |
 | Recall | 0.87 | 0.90 | Good ability to catch hazards. |
