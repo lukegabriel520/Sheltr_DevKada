@@ -64,7 +64,7 @@ Go, caution, and no_go decision thresholds
 Service area and geometry limits
 - Metro Manila bounding box: latitude 14.0 to 15.2, longitude 120.0 to 122.0.
 - Flood route sampling: target spacing 30 meters, max samples 600, and a hard cap of 2,500 line vertices for flood polygon operations.
-- Hazard point scoring in flood_index.py: 0.82 if inside a flood polygon, 0.45 if within a 0.0008 degree buffer (approximately 89 meters in latitude and about 86 meters in longitude at 14.6 degrees latitude in Metro Manila; longitude conversion varies with latitude), 0.08 otherwise.
+- Hazard point scoring in flood_index.py: 0.82 if inside a flood polygon, 0.45 if within a buffer of roughly 90 meters at Metro Manila latitude (represented in code as 0.0008 degrees), 0.08 otherwise.
 
 Weather and flood map selection
 - Flood map thresholds for 3-hour and 24-hour rain in millimeters:
@@ -110,7 +110,7 @@ River proximity metrics
 - Distance buckets reported at 50 m, 100 m, and 150 m.
 
 ## Model results and what they mean
-The metrics below are provided by the team’s external evaluation using Typhoon Carina labeled hazard data. The dataset size, split strategy, validation methodology, and evaluation scripts are not stored in this repository, so the table reflects results supplied outside the codebase.
+The metrics below are provided by the team’s external evaluation using Typhoon Carina labeled hazard data. The dataset size, split strategy, validation methodology, and evaluation scripts are not stored in this repository, so the table reflects results supplied outside the codebase. For evaluation details, contact the project team directly.
 | Metric | Typhoon Scenario | Super Typhoon Scenario | Significance |
 | --- | --- | --- | --- |
 | Recall | 0.87 | 0.90 | Good ability to catch hazards in Typhoon Carina labeled data. |
