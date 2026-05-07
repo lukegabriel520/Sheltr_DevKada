@@ -64,7 +64,7 @@ Go, caution, and no_go decision thresholds
 Service area and geometry limits
 - Metro Manila bounding box: latitude 14.0 to 15.2, longitude 120.0 to 122.0.
 - Flood route sampling: target spacing 30 meters, max samples 600, and a hard cap of 2,500 line vertices for flood polygon operations.
-- Hazard point scoring in flood_index.py: 0.82 if inside a flood polygon, 0.45 if within a 0.0008 degree buffer (approximately 89 meters at Metro Manila latitudes), 0.08 otherwise.
+- Hazard point scoring in flood_index.py: 0.82 if inside a flood polygon, 0.45 if within a 0.0008 degree buffer (approximately 89 meters in latitude and about 86 meters in longitude at Metro Manila latitudes), 0.08 otherwise.
 
 Weather and flood map selection
 - Flood map thresholds for 3-hour and 24-hour rain in millimeters:
@@ -113,7 +113,7 @@ River proximity metrics
 The metrics below are provided by the team’s external evaluation using Typhoon Carina labeled hazard data. The dataset size, split strategy, validation methodology, and evaluation scripts are not stored in this repository, so the table reflects results supplied outside the codebase.
 | Metric | Typhoon | Super Typhoon | Significance |
 | --- | --- | --- | --- |
-| Recall | 0.87 | 0.90 | Good ability to catch hazards. |
-| Precision | 0.77 | 0.76 | 77 percent of typhoon hazard alerts are correct; 76 percent of super typhoon alerts are correct. |
+| Recall | 0.87 | 0.90 | Good ability to catch hazards in Typhoon Carina labeled data. |
+| Precision | 0.77 | 0.76 | 77 percent of Typhoon Carina typhoon hazard alerts are correct; 76 percent of Typhoon Carina super typhoon alerts are correct. |
 | Accuracy | 0.73 | 0.73 | Overall correctness, with hazard presence or absence classified correctly about 73 percent of the time. |
 | Flip Rate (consistency of predictions) | 0.00 | 0.00 | No flips, or 0 percent, across different sampling resolutions. |
